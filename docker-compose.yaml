@@ -1,0 +1,150 @@
+services:
+  # Nessie Catalog Server Using MongoDB version store
+  nessie:
+    image: ghcr.io/projectnessie/nessie
+    container_name: nessie
+    environment:
+      - NESSIE_VERSION_STORE_TYPE=MONGODB  # Enable MongoDB version store
+      - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mongodb:${MONGODB_PORT:-27017}/${MONGODB_DB:-nessie_db}  # MongoDB connection URI
+      - QUARKUS_MONGODB_DATABASE=${MONGODB_DB:-nessie_db}  # MongoDB database for Nessie
+    networks:
+      - datalake
+    ports:
+      - ${NESSIE_PORT:-19120}:19120
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${NESSIE_PORT:-19120} || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    networks:
+      - datalake
+    ports:
+      - "${MONGODB_PORT:-27017}:27017"  
+    volumes:
+      - mongodb_data:/data  # Persist MongoDB data
+      - mongodb_logs:/var/log/mongodb  # Persist MongoDB logs
+      - mongodb_config:/data/configdb  # Persist MongoDB config
+      - mongodb_db:/data/db  # Persist MongoDB database
+    healthcheck:
+      test: ["CMD-SHELL", "mongo --eval 'db.runCommand({ ping: 1 })'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    
+
+  # Minio Storage Server
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER_FILE=/run/secrets/minio_user
+      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_password
+      - MINIO_DOMAIN=storage
+      - MINIO_REGION_NAME=${MINIO_REGION:-us-east-1}
+      - MINIO_REGION=${MINIO_REGION:-us-east-1}
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+    networks:
+      - datalake
+    ports:
+      - ${MINIO_CONSOLE_PORT:-9001}:9001
+      - ${MINIO_PORT:-9000}:9000
+    command: ["server", "/data", "--console-address", ":${MINIO_CONSOLE_PORT:-9001}"]
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://${MINIO_HOST:-minio}:${MINIO_PORT:-9000}/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    secrets:
+      - minio_user
+      - minio_password
+
+  # Prometheus Monitoring Server
+  # https://min.io/docs/minio/linux/operations/monitoring/collect-minio-metrics-using-prometheus.html
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    command: --config.file=/etc/prometheus/prometheus.yaml
+    volumes:
+      - prometheus_data_etc:/etc/prometheus
+      - prometheus_data:/prometheus
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./minio-alerting.yaml:/etc/prometheus/minio-alerting.yaml
+    networks:
+      - datalake
+    depends_on:
+      - minio
+
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PROMETHEUS_PORT:-9090}/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Dremio
+  dremio:
+    image: dremio/dremio-oss:latest
+    container_name: dremio
+    networks:
+      - datalake
+    ports:
+      - ${DREMIO_PORT:-9047}:9047
+    volumes:
+      - dremio_data:/opt/dremio/data
+      - ./dremio-telemetry.yaml:/opt/dremio/conf/dremio-telemetry.yaml
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${DREMIO_PORT:-9047} || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mongodb_logs:
+        driver: local
+        name: mongodb_logs
+  mongodb_data:
+      driver: local
+      name: mongodb_data
+  mongodb_config:
+      driver: local
+      name: mongodb_config
+  mongodb_db:
+      driver: local
+      name: mongodb_db
+  minio_data:
+      driver: local
+      name: minio_data
+  dremio_data:
+      driver: local
+      name: dremio_data
+  prometheus_data:
+      driver: local
+      name: prometheus_data
+  prometheus_data_etc:
+      driver: local
+      name: prometheus_data_etc
+
+networks:
+  datalake:
+    name: datalake
+    driver: bridge
+
+
+secrets:
+  minio_user:
+    file: ./secrets/minio_user.txt
+  minio_password:
+    file: ./secrets/minio_password.txt
