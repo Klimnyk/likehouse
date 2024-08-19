@@ -22,50 +22,34 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
-            if [ ! -d "${{ secrets.SERVER_PROJECT_PATH }}/.git" ]; then
+            
+            if [ ! -d ".git" ]; then
               echo "Git repository not found. Cloning..."
               git clone https://github.com/${{ github.repository }} ${{ secrets.SERVER_PROJECT_PATH }}
             else
               cd ${{ secrets.SERVER_PROJECT_PATH }}
               git pull origin main
             fi
+
+            echo "MONGODB_DB=${{ secrets.MONGODB_DB }}" > .env
+            echo "MONGODB_PORT=${{ secrets.MONGODB_PORT }}" >> .env
+
+            echo "MINIO_HOST=${{ secrets.MINIO_HOST }}" >> .env
+            echo "MINIO_REGION=${{ secrets.MINIO_REGION }}" >> .env
+            echo "MINIO_PORT=${{ secrets.MINIO_PORT }}" >> .env
+            echo "MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}" >> .env
+
+            echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
+            echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
+            echo "DREMIO_HEAP_MEMORY_SIZE=${{ secrets.DREMIO_HEAP_MEMORY_SIZE }}" >> .env
+            echo "DREMIO_MAX_DIRECT_MEMORY_SIZE=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE }}" >> .env
             
+            echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
+            
+            echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
 
-            if [ ! -d ".env" ]; then
-              touch .env
-              echo "MONGODB_DB=${{ secrets.MONGODB_DB }}" >> .env
-              echo "MONGODB_PORT=${{ secrets.MONGODB_PORT }}" >> .env
-                
-              echo "MINIO_HOST=${{ secrets.MINIO_HOST }}" >> .env
-              echo "MINIO_REGION=${{ secrets.MINIO_REGION }}" >> .env
-              echo "MINIO_PORT=${{ secrets.MINIO_PORT }}" >> .env
-              echo "MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}" >> .env
-      
-              echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
-              echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
-              
-              echo "DREMIO_HEAP_MEMORY_SIZE=${{ secrets.DREMIO_HEAP_MEMORY_SIZE }}" >> .env
-              echo "DREMIO_MAX_DIRECT_MEMORY_SIZE=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE }}" >> .env
 
-              echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
-      
-              echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
-            else
-              echo ".env already exists"
-            fi
-
-            if [ ! -d "${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt" ]; then
-              touch ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt
-              echo "${{ secrets.MINIO_USER }}" >> ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt
-            else
-              echo "Minio user secret already exists"
-            fi
-
-            if [ ! -d "${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt" ]; then
-              touch ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt
-              echo "${{ secrets.MINIO_PASSWORD }}" >> ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt
-            else
-              echo "Minio password secret already exists"
-            fi
+            echo "${{ secrets.MINIO_USER }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt
+            echo "${{ secrets.MINIO_PASSWORD }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt
 
             docker compose up -d --build
