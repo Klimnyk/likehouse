@@ -25,8 +25,8 @@ services:
     container_name: mongodb
     networks:
       - datalake
-    ports:
-      - "${MONGODB_PORT:-27017}:27017"  
+    #ports:
+     # - "${MONGODB_PORT:-27017}:27017"  
     volumes:
       - mongodb_data:/data  # Persist MongoDB data
       - mongodb_logs:/var/log/mongodb  # Persist MongoDB logs
@@ -101,6 +101,7 @@ services:
       - datalake
     ports:
       - ${DREMIO_PORT:-9047}:9047
+      - ${DREMIO_ODBC_JDBC_PORT:-32010}:32010
     volumes:
       - dremio_data:/opt/dremio/data
       - ./dremio-telemetry.yaml:/opt/dremio/conf/dremio-telemetry.yaml

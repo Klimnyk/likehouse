@@ -42,9 +42,11 @@ jobs:
               echo "MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}" >> .env
       
               echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
+              echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
+              
               echo "DREMIO_HEAP_MEMORY_SIZE=${{ secrets.DREMIO_HEAP_MEMORY_SIZE }}" >> .env
               echo "DREMIO_MAX_DIRECT_MEMORY_SIZE=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE }}" >> .env
-      
+
               echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
       
               echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
