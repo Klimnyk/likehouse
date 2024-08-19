@@ -27,6 +27,7 @@ jobs:
               echo "Git repository not found. Cloning..."
               git clone https://github.com/${{ github.repository }} ${{ secrets.SERVER_PROJECT_PATH }}
             else
+              echo "Git repository pulling..."
               cd ${{ secrets.SERVER_PROJECT_PATH }}
               git pull origin main
             fi
@@ -41,6 +42,7 @@ jobs:
 
             echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
             echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
+            echo "DREMIO_SQL_PORT=${{ secrets.DREMIO_SQL_PORT }}" >> .env
             echo "DREMIO_HEAP_MEMORY_SIZE=${{ secrets.DREMIO_HEAP_MEMORY_SIZE }}" >> .env
             echo "DREMIO_MAX_DIRECT_MEMORY_SIZE=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE }}" >> .env
             
@@ -48,8 +50,7 @@ jobs:
             
             echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
 
-
             echo "${{ secrets.MINIO_USER }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt
             echo "${{ secrets.MINIO_PASSWORD }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt
-
+            
             docker compose up -d --build

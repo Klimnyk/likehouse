@@ -102,6 +102,7 @@ services:
     ports:
       - ${DREMIO_PORT:-9047}:9047
       - ${DREMIO_ODBC_JDBC_PORT:-32010}:32010
+      - ${DREMIO_SQL_PORT:-31010}:31010
     volumes:
       - dremio_data:/opt/dremio/data
       - ./dremio-telemetry.yaml:/opt/dremio/conf/dremio-telemetry.yaml
