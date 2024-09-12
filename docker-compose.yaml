@@ -103,6 +103,10 @@ services:
       - ${DREMIO_PORT:-9047}:9047
       - ${DREMIO_ODBC_JDBC_PORT:-32010}:32010
       - ${DREMIO_SQL_PORT:-31010}:31010
+    environment:
+      - DREMIO_MAX_HEAP_MEMORY_SIZE_MB=${DREMIO_MAX_HEAP_MEMORY_SIZE_MB:-4096}
+      - DREMIO_MAX_DIRECT_MEMORY_SIZE_MB=${DREMIO_MAX_DIRECT_MEMORY_SIZE:-8192}
+      - DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB=${DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB:-512}
     volumes:
       - dremio_data:/opt/dremio/data
       - ./dremio-telemetry.yaml:/opt/dremio/conf/dremio-telemetry.yaml

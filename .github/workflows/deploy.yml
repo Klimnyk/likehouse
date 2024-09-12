@@ -22,7 +22,8 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
-            
+            docker compose down
+             
             if [ ! -d ".git" ]; then
               echo "Git repository not found. Cloning..."
               git clone https://github.com/${{ github.repository }} ${{ secrets.SERVER_PROJECT_PATH }}
@@ -43,9 +44,10 @@ jobs:
             echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
             echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
             echo "DREMIO_SQL_PORT=${{ secrets.DREMIO_SQL_PORT }}" >> .env
-            echo "DREMIO_HEAP_MEMORY_SIZE=${{ secrets.DREMIO_HEAP_MEMORY_SIZE }}" >> .env
-            echo "DREMIO_MAX_DIRECT_MEMORY_SIZE=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE }}" >> .env
-            
+            echo "DREMIO_MAX_HEAP_MEMORY_SIZE_MB=${{ secrets.DREMIO_HEAP_MEMORY_SIZE }}" >> .env
+            echo "DREMIO_MAX_DIRECT_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE }}" >> .env
+            echo "DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_PERMGEN_MEMORY_SIZE }}" >> .env
+
             echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
             
             echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
