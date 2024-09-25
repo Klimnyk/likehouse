@@ -9,8 +9,8 @@ services:
       - QUARKUS_MONGODB_DATABASE=${MONGODB_DB:-nessie_db}  # MongoDB database for Nessie
     networks:
       - datalake
-    ports:
-      - ${NESSIE_PORT:-19120}:19120
+    # ports:
+    #   - ${NESSIE_PORT:-19120}:19120
     depends_on:
       - mongodb
     restart: unless-stopped
@@ -70,21 +70,21 @@ services:
 
   # Prometheus Monitoring Server
   # https://min.io/docs/minio/linux/operations/monitoring/collect-minio-metrics-using-prometheus.html
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "${PROMETHEUS_PORT:-9090}:9090"
-    command: --config.file=/etc/prometheus/prometheus.yaml
-    volumes:
-      - prometheus_data_etc:/etc/prometheus
-      - prometheus_data:/prometheus
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - ./minio-alerting.yaml:/etc/prometheus/minio-alerting.yaml
-    networks:
-      - datalake
-    depends_on:
-      - minio
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "${PROMETHEUS_PORT:-9090}:9090"
+  #   command: --config.file=/etc/prometheus/prometheus.yaml
+  #   volumes:
+  #     - prometheus_data_etc:/etc/prometheus
+  #     - prometheus_data:/prometheus
+  #     - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+  #     - ./minio-alerting.yaml:/etc/prometheus/minio-alerting.yaml
+  #   networks:
+  #     - datalake
+  #   depends_on:
+  #     - minio
 
     restart: unless-stopped
     healthcheck:
@@ -136,12 +136,12 @@ volumes:
   dremio_data:
       driver: local
       name: dremio_data
-  prometheus_data:
-      driver: local
-      name: prometheus_data
-  prometheus_data_etc:
-      driver: local
-      name: prometheus_data_etc
+  # prometheus_data:
+  #     driver: local
+  #     name: prometheus_data
+  # prometheus_data_etc:
+  #     driver: local
+  #     name: prometheus_data_etc
 
 networks:
   datalake:
