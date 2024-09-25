@@ -85,13 +85,12 @@ services:
   #     - datalake
   #   depends_on:
   #     - minio
-
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PROMETHEUS_PORT:-9090}/-/healthy || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    # restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:${PROMETHEUS_PORT:-9090}/-/healthy || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
 
   # Dremio
   dremio:
