@@ -1,5 +1,4 @@
 services:
-  # Nessie Catalog Server Using MongoDB version store
   nessie:
     image: ghcr.io/projectnessie/nessie
     container_name: nessie
@@ -9,8 +8,6 @@ services:
       - QUARKUS_MONGODB_DATABASE=${MONGODB_DB:-nessie_db}  # MongoDB database for Nessie
     networks:
       - datalake
-    # ports:
-    #   - ${NESSIE_PORT:-19120}:19120
     depends_on:
       - mongodb
     restart: unless-stopped
@@ -25,8 +22,6 @@ services:
     container_name: mongodb
     networks:
       - datalake
-    #ports:
-     # - "${MONGODB_PORT:-27017}:27017"  
     volumes:
       - mongodb_data:/data  # Persist MongoDB data
       - mongodb_logs:/var/log/mongodb  # Persist MongoDB logs
@@ -49,7 +44,7 @@ services:
       - MINIO_DOMAIN=storage
       - MINIO_REGION_NAME=${MINIO_REGION:-us-east-1}
       - MINIO_REGION=${MINIO_REGION:-us-east-1}
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
     networks:
       - datalake
     ports:
@@ -68,29 +63,6 @@ services:
       - minio_user
       - minio_password
 
-  # Prometheus Monitoring Server
-  # https://min.io/docs/minio/linux/operations/monitoring/collect-minio-metrics-using-prometheus.html
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   container_name: prometheus
-  #   ports:
-  #     - "${PROMETHEUS_PORT:-9090}:9090"
-  #   command: --config.file=/etc/prometheus/prometheus.yaml
-  #   volumes:
-  #     - prometheus_data_etc:/etc/prometheus
-  #     - prometheus_data:/prometheus
-  #     - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
-  #     - ./minio-alerting.yaml:/etc/prometheus/minio-alerting.yaml
-  #   networks:
-  #     - datalake
-  #   depends_on:
-  #     - minio
-    # restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://localhost:${PROMETHEUS_PORT:-9090}/-/healthy || exit 1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
 
   # Dremio
   dremio:
@@ -135,12 +107,6 @@ volumes:
   dremio_data:
       driver: local
       name: dremio_data
-  # prometheus_data:
-  #     driver: local
-  #     name: prometheus_data
-  # prometheus_data_etc:
-  #     driver: local
-  #     name: prometheus_data_etc
 
 networks:
   datalake:

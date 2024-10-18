@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: SSH to Server and Clone or Pull Repository and make .env & prometheus.yaml files
+      - name: SSH to Server and Clone or Pull Repository and make .env
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -22,6 +22,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
+            
             docker compose down
              
             if [ ! -d ".git" ]; then
@@ -40,6 +41,7 @@ jobs:
             echo "MINIO_REGION=${{ secrets.MINIO_REGION }}" >> .env
             echo "MINIO_PORT=${{ secrets.MINIO_PORT }}" >> .env
             echo "MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}" >> .env
+            echo "MINIO_BROWSER_REDIRECT_URL==${{ secrets.MINIO_BROWSER_REDIRECT_URL }}" >> .env
 
             echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
             echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
