@@ -41,7 +41,7 @@ jobs:
             echo "MINIO_REGION=${{ secrets.MINIO_REGION }}" >> .env
             echo "MINIO_PORT=${{ secrets.MINIO_PORT }}" >> .env
             echo "MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}" >> .env
-            echo "MINIO_BROWSER_REDIRECT_URL==${{ secrets.MINIO_BROWSER_REDIRECT_URL }}" >> .env
+            echo "MINIO_BROWSER_REDIRECT_URL=${{ secrets.MINIO_BROWSER_REDIRECT_URL }}" >> .env
 
             echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
             echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
