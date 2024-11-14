@@ -56,5 +56,11 @@ jobs:
 
             echo "${{ secrets.MINIO_USER }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt
             echo "${{ secrets.MINIO_PASSWORD }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt
-            
+
+            export S3A_ACCESS_KEY="${{ secrets.S3A_ACCESS_KEY }}"
+            export S3A_SECRET_KEY="${{ secrets.S3A_SECRET_KEY }}"
+
+            sed -i "s|<value>S3A_ACCESS_KEY</value>|<value>${S3A_ACCESS_KEY}</value>|" core-site.xml
+            sed -i "s|<value>S3A_SECRET_KEY</value>|<value>${S3A_SECRET_KEY}</value>|" core-site.xml
+                        
             docker compose up -d --build

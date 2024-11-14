@@ -44,7 +44,7 @@ services:
       - MINIO_DOMAIN=storage
       - MINIO_REGION_NAME=${MINIO_REGION:-us-east-1}
       - MINIO_REGION=${MINIO_REGION:-us-east-1}
-      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL:-http://localhost:9001}
     networks:
       - datalake
     ports:
@@ -81,6 +81,8 @@ services:
     volumes:
       - dremio_data:/opt/dremio/data
       - ./dremio-telemetry.yaml:/opt/dremio/conf/dremio-telemetry.yaml
+      - ./dremio.conf:/opt/dremio/conf/dremio.conf
+      - ./core-site.xml:/opt/dremio/conf/core-site.xml
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${DREMIO_PORT:-9047} || exit 1"]
