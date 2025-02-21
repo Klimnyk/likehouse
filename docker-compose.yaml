@@ -6,6 +6,7 @@ services:
       - NESSIE_VERSION_STORE_TYPE=MONGODB  # Enable MongoDB version store
       - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mongodb:${MONGODB_PORT:-27017}/${MONGODB_DB:-nessie_db}  # MongoDB connection URI
       - QUARKUS_MONGODB_DATABASE=${MONGODB_DB:-nessie_db}  # MongoDB database for Nessie
+      - TZ={TIME_ZONE}
     networks:
       - datalake
     depends_on:
@@ -20,6 +21,8 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
+    environment:
+      - TZ={TIME_ZONE}
     networks:
       - datalake
     volumes:
@@ -45,6 +48,7 @@ services:
       - MINIO_REGION_NAME=${MINIO_REGION:-us-east-1}
       - MINIO_REGION=${MINIO_REGION:-us-east-1}
       - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL:-http://localhost:9001}
+      - TZ={TIME_ZONE}
     networks:
       - datalake
     ports:
@@ -74,6 +78,7 @@ services:
       - ${DREMIO_PORT:-9047}:9047
       - ${DREMIO_ODBC_JDBC_PORT:-32010}:32010
       - ${DREMIO_SQL_PORT:-31010}:31010
+      - TZ={TIME_ZONE}
     environment:
       - DREMIO_MAX_HEAP_MEMORY_SIZE_MB=${DREMIO_MAX_HEAP_MEMORY_SIZE_MB:-4096}
       - DREMIO_MAX_DIRECT_MEMORY_SIZE_MB=${DREMIO_MAX_DIRECT_MEMORY_SIZE:-8192}

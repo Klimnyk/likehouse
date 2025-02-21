@@ -54,6 +54,8 @@ jobs:
             
             echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
 
+            echo "TIME_ZONE=${{ secrets.TIME_ZONE }}" >> .env
+
             echo "${{ secrets.MINIO_USER }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_user.txt
             echo "${{ secrets.MINIO_PASSWORD }}" > ${{ secrets.SERVER_PROJECT_PATH }}/secrets/minio_password.txt
 
