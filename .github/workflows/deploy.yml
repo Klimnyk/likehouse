@@ -52,7 +52,6 @@ jobs:
 
             echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
             
-            echo "PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }}" >> .env
 
             echo "TIME_ZONE=${{ secrets.TIME_ZONE }}" >> .env
 
