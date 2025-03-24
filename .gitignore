@@ -4,7 +4,6 @@
 /secrets/*user*
 /ignore/*
 
-core-site.xml
 
 # Environments
 .env
