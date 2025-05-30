@@ -1,4 +1,4 @@
-name: Deploy
+name: ssh test
 
 on:
   push:
