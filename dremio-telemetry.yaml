@@ -1,0 +1,54 @@
+auto-reload:
+  enabled: True
+  period: 2000
+  unit: MILLISECONDS
+
+metrics:
+  -
+    name: kvstore
+    reporter:
+      type: jmx
+  -
+    name: jobs
+    reporter:
+      type: jmx
+  -
+    name: dremio
+    reporter:
+      type: jmx
+  -
+    name: fragments
+    reporter:
+      type: jmx
+  -
+    name: rpc
+    reporter:
+      type: jmx
+  -
+    name: reflections
+    reporter:
+      type: jmx
+  -
+    name: com.dremio
+    reporter:
+      type: jmx
+  -
+    name: gc
+    reporter:
+      type: jmx
+  -
+    name: buffer-pool
+    reporter:
+      type: jmx
+  -
+    name: memory
+    reporter:
+      type: jmx
+  -
+    name: threads
+    reporter:
+      type: jmx
+  -
+    name: rpcbit
+    reporter:
+      type: jmx
