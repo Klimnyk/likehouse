@@ -44,6 +44,7 @@ jobs:
             echo "DREMIO_MAX_HEAP_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_HEAP_MEMORY_SIZE_MB }}" >> .env
             echo "DREMIO_MAX_DIRECT_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE_MB }}" >> .env
             echo "DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB }}" >> .env
+            echo "DREMIO_GC_OPTS=${{ secrets.DREMIO_GC_OPTS }}" >> .env
 
             echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
             
