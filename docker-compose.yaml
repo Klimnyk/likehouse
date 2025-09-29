@@ -1,0 +1,77 @@
+services:
+  nessie:
+    image: ghcr.io/projectnessie/nessie
+    container_name: nessie
+    environment:
+      - NESSIE_VERSION_STORE_TYPE=MONGODB  # Enable MongoDB version store
+      - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mongodb:${MONGODB_PORT:-27017}/${MONGODB_DB:-nessie_db}  # MongoDB connection URI
+      - QUARKUS_MONGODB_DATABASE=${MONGODB_DB:-nessie_db}  # MongoDB database for Nessie
+    ports:
+      - ${NESSIE_PORT:-19120}:19120
+    networks:
+      - datalake
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - TZ={TIME_ZONE}
+    networks:
+      - datalake
+    volumes:
+      - mongodb_data:/data  # Persist MongoDB data
+      - mongodb_logs:/var/log/mongodb  # Persist MongoDB logs
+      - mongodb_config:/data/configdb  # Persist MongoDB config
+      - mongodb_db:/data/db  # Persist MongoDB database
+
+
+  dremio:
+    image: dremio/dremio-oss:26.0.5
+    container_name: dremio
+    networks:
+      - datalake
+    ports:
+      - ${DREMIO_PORT:-9047}:9047
+      - ${DREMIO_ODBC_JDBC_PORT:-32010}:32010
+      - ${DREMIO_SQL_PORT:-31010}:31010
+      
+    environment:
+      - DREMIO_MAX_HEAP_MEMORY_SIZE_MB=${DREMIO_MAX_HEAP_MEMORY_SIZE_MB:-32768}
+      - DREMIO_MAX_DIRECT_MEMORY_SIZE_MB=${DREMIO_MAX_DIRECT_MEMORY_SIZE_MB:-131072}
+      - DREMIO_GC_OPTS=${DREMIO_GC_OPTS}
+      - TZ=${TIME_ZONE}
+    volumes:
+      - dremio_data:/opt/dremio/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./dremio-telemetry.yaml:/opt/dremio/conf/dremio-telemetry.yaml
+      - ./dremio.conf:/opt/dremio/conf/dremio.conf
+      - ./core-site.xml:/opt/dremio/conf/core-site.xml
+      - ./dremio-entrypoint.sh:/usr/local/bin/dremio-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/usr/local/bin/dremio-entrypoint.sh"]
+    restart: unless-stopped
+
+volumes:
+  mongodb_logs:
+        driver: local
+        name: mongodb_logs
+  mongodb_data:
+      driver: local
+      name: mongodb_data
+  mongodb_config:
+      driver: local
+      name: mongodb_config
+  mongodb_db:
+      driver: local
+      name: mongodb_db
+  dremio_data:
+      driver: local
+      name: dremio_data
+
+networks:
+  datalake:
+    name: datalake
+    driver: bridge

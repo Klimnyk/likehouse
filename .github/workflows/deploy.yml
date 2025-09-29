@@ -1,0 +1,63 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: SSH to Server and Clone or Pull Repository and make .env
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          port: ${{ secrets.SERVER_PORT }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ${{ secrets.SERVER_PROJECT_PATH }}
+            
+            docker compose down
+             
+            if [ ! -d ".git" ]; then
+              echo "Git repository not found. Cloning..."
+              git clone https://github.com/${{ github.repository }} ${{ secrets.SERVER_PROJECT_PATH }}
+            else
+              echo "Git repository pulling..."
+              cd ${{ secrets.SERVER_PROJECT_PATH }}
+              git pull origin main
+            fi
+
+            echo "MONGODB_DB=${{ secrets.MONGODB_DB }}" > .env
+            echo "MONGODB_PORT=${{ secrets.MONGODB_PORT }}" >> .env
+
+
+            echo "DREMIO_PORT=${{ secrets.DREMIO_PORT }}" >> .env
+            echo "DREMIO_ODBC_JDBC_PORT=${{ secrets.DREMIO_ODBC_JDBC_PORT }}" >> .env
+            echo "DREMIO_SQL_PORT=${{ secrets.DREMIO_SQL_PORT }}" >> .env
+            echo "DREMIO_MAX_HEAP_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_HEAP_MEMORY_SIZE_MB }}" >> .env
+            echo "DREMIO_MAX_DIRECT_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_DIRECT_MEMORY_SIZE_MB }}" >> .env
+            echo "DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB=${{ secrets.DREMIO_MAX_PERMGEN_MEMORY_SIZE_MB }}" >> .env
+            echo "DREMIO_GC_OPTS=${{ secrets.DREMIO_GC_OPTS }}" >> .env
+
+            echo "NESSIE_PORT=${{ secrets.NESSIE_PORT }}" >> .env
+            
+
+            echo "TIME_ZONE=${{ secrets.TIME_ZONE }}" >> .env
+
+            export S3A_ACCESS_KEY="${{ secrets.S3A_ACCESS_KEY }}"
+            export S3A_SECRET_KEY="${{ secrets.S3A_SECRET_KEY }}"
+
+            sed -i "s|<value>S3A_ACCESS_KEY</value>|<value>${S3A_ACCESS_KEY}</value>|" core-site.xml
+            sed -i "s|<value>S3A_SECRET_KEY</value>|<value>${S3A_SECRET_KEY}</value>|" core-site.xml
+            
+            # Make entrypoint script executable
+            chmod +x dremio-entrypoint.sh
+                        
+            docker compose up -d --build

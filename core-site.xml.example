@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<configuration>
+<property>
+    <name>fs.dremioS3.impl</name>
+    <value>com.dremio.plugins.s3.store.S3FileSystem</value>
+</property>
+<property>
+    <name>fs.s3a.access.key</name>
+    <value>S3A_ACCESS_KEY</value>
+</property>
+<property>
+    <name>fs.s3a.secret.key</name>
+    <value>S3A_SECRET_KEY</value>
+</property>
+<property>
+    <name>fs.s3a.aws.credentials.provider</name>
+    <value>org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider</value>
+</property>
+<property>
+    <name>fs.s3a.endpoint</name>
+       <value>minio1:9000</value>
+</property>
+<property>
+    <name>fs.s3a.path.style.access</name>
+    <value>true</value>
+</property>
+<property>
+    <name>dremio.s3.compat</name>
+    <value>true</value>
+</property>
+<property>
+    <name>fs.s3a.connection.ssl.enabled</name>
+    <value>false</value>
+</property>
+</configuration>

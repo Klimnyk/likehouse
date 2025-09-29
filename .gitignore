@@ -1,0 +1,21 @@
+
+/tmp*
+/secrets/*password*
+/secrets/*user*
+/ignore/*
+/dev/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm & VScode
+.idea/
+.vscode/
+
+core-site.xml
